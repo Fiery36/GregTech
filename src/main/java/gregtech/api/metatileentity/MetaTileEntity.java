@@ -847,25 +847,33 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
     }
 
     public void update() {
+        // Checks if tick acceleration is disabled and if it's server-side
         if (!allowTickAcceleration() && getWorld().getMinecraftServer() != null) {
+            // The current server tick
             int currentTick = getWorld().getMinecraftServer().getTickCounter();
+            // Protects against updating in the same tick twice
             if (currentTick == lastTick) {
                 return;
             }
+            // Updates lastTick so this segment continues to work
             lastTick = currentTick;
         }
-
+        // Apparently runs through all traits a machine has and gives them a chance to run their update() logic
         for (MTETrait mteTrait : this.mteTraits.values()) {
+            // Enabled by default but subclasses can override
             if (shouldUpdate(mteTrait)) {
                 mteTrait.update();
             }
         }
 
+        // Server-side only
         if (!getWorld().isRemote) {
             updateCovers();
+        // Client-side only
         } else {
             updateSound();
         }
+        // Only updates light levels every 5 ticks to improve performance
         if (getOffsetTimer() % 5 == 0L) {
             updateLightValue();
         }
@@ -880,6 +888,7 @@ public abstract class MetaTileEntity implements ISyncedTileEntity, CoverHolder, 
         return ConfigHolder.machines.allowTickAcceleration;
     }
 
+    // Used in update()
     protected boolean shouldUpdate(MTETrait trait) {
         return true;
     }

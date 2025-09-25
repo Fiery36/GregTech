@@ -41,10 +41,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+// class extends (inherits fields and methods of parent class of) MultiblockWithDisplayBase and implements (guarantees whatever is specified by) IDataInfoProvider, ICleanroomReceiver, IDistinctBusController, IControllable
 public abstract class RecipeMapMultiblockController extends MultiblockWithDisplayBase implements IDataInfoProvider,
                                                     ICleanroomReceiver, IDistinctBusController,
                                                     IControllable {
-
+    // variables
     public final RecipeMap<?> recipeMap;
     protected MultiblockRecipeLogic recipeMapWorkable;
     protected IItemHandlerModifiable inputInventory;
@@ -59,61 +60,71 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
     @Nullable
     private ICleanroomProvider cleanroom;
 
+    // constructor which requires a metaTileEntityId and recipemap
     public RecipeMapMultiblockController(ResourceLocation metaTileEntityId, RecipeMap<?> recipeMap) {
+        // passes the metaTileEntityId to the parent class
         super(metaTileEntityId);
+        // ???
         this.recipeMap = recipeMap;
+        // ???
         this.recipeMapWorkable = new MultiblockRecipeLogic(this);
+        // calls resetTileAbilities
         resetTileAbilities();
     }
 
+    // If called gets the current energy in energy hatches
     public IEnergyContainer getEnergyContainer() {
         return energyContainer;
     }
-
+    // If called gets the current items in input inventories
     public IItemHandlerModifiable getInputInventory() {
         return inputInventory;
     }
-
+    // If called gets the current items in output inventories
     public IItemHandlerModifiable getOutputInventory() {
         return outputInventory;
     }
-
+    // If called gets the current fluid in input tanks
     public IMultipleTankHandler getInputFluidInventory() {
         // if distinct, return the normal input fluid inventory,
         // as recipe logic handles gathering extra fluids
         // if not distinct, return all the fluids instead
         return isDistinct() ? inputFluidInventory : extendedFluidInputs;
     }
-
+    // If called gets the current fluid in output tanks
     public IMultipleTankHandler getOutputFluidInventory() {
         return outputFluidInventory;
     }
-
+    // If called ???
     public MultiblockRecipeLogic getRecipeMapWorkable() {
         return recipeMapWorkable;
     }
 
-    /**
-     * Performs extra checks for validity of given recipe before multiblock
-     * will start it's processing.
-     */
+
+    // If called performs extra checks for validity of given recipe before multiblock
     public boolean checkRecipe(@NotNull Recipe recipe, boolean consumeIfSuccess) {
         return true;
     }
 
     @Override
     protected void formStructure(PatternMatchContext context) {
+        // Calls parent class method
         super.formStructure(context);
+        // Calls initializeAbilities
         initializeAbilities();
     }
 
     @Override
     public void invalidateStructure() {
+        // Calls parent class method
         super.invalidateStructure();
+        // Calls resetTileAbilities
         resetTileAbilities();
+        // ???
         this.recipeMapWorkable.invalidate();
     }
 
+    // ???
     @Override
     protected void updateFormedValid() {
         if (!hasMufflerMechanics() || isMufflerFaceFree()) {
@@ -121,11 +132,14 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         }
     }
 
+    // Returns whether the current multiblock is active or not
     @Override
     public boolean isActive() {
+        // returns true if the structure is formed, active, and can work
         return isStructureFormed() && recipeMapWorkable.isActive() && recipeMapWorkable.isWorkingEnabled();
     }
 
+    // When called creates the inventories
     protected void initializeAbilities() {
         this.inputInventory = new ItemHandlerList(getAbilities(MultiblockAbility.IMPORT_ITEMS));
         this.inputFluidInventory = new FluidTankList(allowSameFluidFillForOutputs(),
@@ -141,6 +155,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         this.energyContainer = new EnergyContainerList(inputEnergy);
     }
 
+    // When called resets the data of inventories
     private void resetTileAbilities() {
         this.inputInventory = new GTItemStackHandler(this, 0);
         this.inputFluidInventory = new FluidTankList(true);
@@ -150,6 +165,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         this.energyContainer = new EnergyContainerList(Lists.newArrayList());
     }
 
+    // ???
     protected IMultipleTankHandler extendedImportFluidList(IMultipleTankHandler fluids) {
         List<IFluidTank> tanks = new ArrayList<>(fluids.getFluidTanks());
         // iterate import items to look for and tanks that we might have missed
@@ -168,11 +184,15 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         return new FluidTankList(allowSameFluidFillForOutputs(), tanks);
     }
 
+    // True by default but can be changed by subclasses
     protected boolean allowSameFluidFillForOutputs() {
         return true;
     }
 
+    // Adds display text
+    @Override
     protected void configureDisplayText(MultiblockUIBuilder builder) {
+        // ???
         builder.setWorkingStatus(recipeMapWorkable.isWorkingEnabled(), recipeMapWorkable.isActive())
                 .addEnergyUsageLine(this.getEnergyContainer())
                 .addEnergyTierLine(GTUtility.getTierByVoltage(recipeMapWorkable.getMaxVoltage()))
@@ -182,6 +202,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
                 .addRecipeOutputLine(recipeMapWorkable);
     }
 
+    @Override
     protected void configureWarningText(MultiblockUIBuilder builder) {
         builder.addLowPowerLine(recipeMapWorkable.isHasNotEnoughEnergy());
         super.configureWarningText(builder);
@@ -262,6 +283,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         isDistinct = buf.readBoolean();
     }
 
+    // Distinct bus logic
     @Override
     public boolean canBeDistinct() {
         return false;
@@ -340,6 +362,7 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         return list;
     }
 
+    // clean room logic
     @Nullable
     @Override
     public ICleanroomProvider getCleanroom() {
@@ -358,11 +381,13 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         this.cleanroom = null;
     }
 
+    // Asks recipeMapWorkable if the machine is allowed to work or not
     @Override
     public boolean isWorkingEnabled() {
         return recipeMapWorkable.isWorkingEnabled();
     }
 
+    // Uses recipeMapWorkable to change whether the machine is allowed to work or not
     @Override
     public void setWorkingEnabled(boolean isWorkingAllowed) {
         recipeMapWorkable.setWorkingEnabled(isWorkingAllowed);

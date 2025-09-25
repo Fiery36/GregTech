@@ -74,6 +74,7 @@ public abstract class MultiblockWithDisplayBase extends MultiblockControllerBase
     protected List<BlockPos> variantActiveBlocks;
     protected boolean lastActive;
 
+    //
     public MultiblockWithDisplayBase(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId);
         this.maintenance_problems = 0b000000;
@@ -173,11 +174,14 @@ public abstract class MultiblockWithDisplayBase extends MultiblockControllerBase
         return hasMufflerMechanics() && !isMufflerFaceFree();
     }
 
+    //
     @Override
     protected void formStructure(PatternMatchContext context) {
+        // ???
         super.formStructure(context);
-        if (this.hasMaintenanceMechanics() && ConfigHolder.machines.enableMaintenance) { // nothing extra if no
-                                                                                         // maintenance
+        // checks if multiblock has maintenance and it's enabled in the config
+        if (this.hasMaintenanceMechanics() && ConfigHolder.machines.enableMaintenance) {
+            // ???
             if (getAbilities(MultiblockAbility.MAINTENANCE_HATCH).isEmpty())
                 return;
             maintenanceHatch = getAbilities(MultiblockAbility.MAINTENANCE_HATCH).get(0);
@@ -371,8 +375,10 @@ public abstract class MultiblockWithDisplayBase extends MultiblockControllerBase
         return true;
     }
 
+    // Hook for subclasses
     protected void configureDisplayText(MultiblockUIBuilder builder) {}
 
+    // Creates and maintenance error text
     protected void configureErrorText(MultiblockUIBuilder builder) {
         builder.structureFormed(isStructureFormed());
         if (hasMufflerMechanics())

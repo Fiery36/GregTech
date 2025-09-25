@@ -103,8 +103,11 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
 
     @Override
     public void update() {
+        // Calls parent class update() method
         super.update();
+        // Server-side only
         if (!getWorld().isRemote) {
+            // Calls checkStructurePattern the first tick and every 20 ticks
             if (getOffsetTimer() % 20 == 0 || isFirstTick()) {
                 checkStructurePattern();
             }
@@ -395,6 +398,7 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
         return true;
     }
 
+    // Hook for subclasses
     protected void formStructure(PatternMatchContext context) {}
 
     public void invalidateStructure() {
@@ -485,6 +489,7 @@ public abstract class MultiblockControllerBase extends MetaTileEntity implements
         return null;
     }
 
+    // Checks if structure is formed based on structureFormed variable
     public boolean isStructureFormed() {
         return structureFormed;
     }

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Implement this interface in order to make a TileEntity into a block that recieves a cleanroom from other blocks
+ * Implement this interface in order to make a TileEntity into a block that receives a cleanroom from other blocks
  */
 public interface ICleanroomReceiver {
 
